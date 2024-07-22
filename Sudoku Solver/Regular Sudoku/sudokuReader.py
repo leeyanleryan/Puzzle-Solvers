@@ -71,10 +71,28 @@ class sudokuReader:
         return (-1, -1), (-1, -1)
     
     def readNumber(self):
-        for i in range(self.height):
-            for j in range(self.width):
-                rgb = self.getRGBAt(i, j)
-                if rgb == self.border_rgb:
-                    self.modified_image[i, j] = rgb
+        coords = []
+        change = [54, 53, 52, 53, 53, 53, 52, 53, 54]
+        row1 = [[(2,2)], [(2,58)], [(2,113)], [(2,168)], [(2,223)], [(2, 278)], [(2,334)], [(2,388)], [(2,443)]]
+        curr = 1
+        for i in range(9):
+            top_left = row1[i][0]
+            bottom_right = (top_left[0]+change[0], top_left[1]+change[i])
+            row1[i].append(bottom_right)
+            number_image = self.image[top_left[0]:bottom_right[0]+1, top_left[1]:bottom_right[1]+1]
+            cv2.imwrite(f"Numbers/{str(curr)}.png", number_image)
+            curr += 1
+        coords.append(row1)
+        for i in range(1, 9):
+            curr_row = []
+            for j in range(9):
+                top_left = (row1[i][0][1], row1[j][0][1])
+                bottom_right = (top_left[0]+change[i], top_left[1]+change[j])
+                curr_row.append([top_left, bottom_right])
+                number_image = self.image[top_left[0]:bottom_right[0]+1, top_left[1]:bottom_right[1]+1]
+                cv2.imwrite(f"Numbers/{str(curr)}.png", number_image)
+                curr += 1
+            coords.append(curr_row)
+        print(coords)
         
 sr = sudokuReader("Puzzles/puzzle3.png")
