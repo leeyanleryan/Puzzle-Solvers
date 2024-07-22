@@ -54,6 +54,7 @@ class sudokuReader:
     def getBorderCoordinates(self):
         top_left = (-1, -1)
         for i in range(self.height):
+            top_left = (-1, -1)
             for j in range(self.width):
                 if self.getRGBAt(i, j) == self.border_rgb:
                     top_left = (i, j)
@@ -72,26 +73,16 @@ class sudokuReader:
     
     def readNumber(self):
         coords = []
+        start = [2, 58, 113, 168, 223, 278, 334, 388, 443]
         change = [54, 53, 52, 53, 53, 53, 52, 53, 54]
-        row1 = [[(2,2)], [(2,58)], [(2,113)], [(2,168)], [(2,223)], [(2, 278)], [(2,334)], [(2,388)], [(2,443)]]
-        curr = 1
         for i in range(9):
-            top_left = row1[i][0]
-            bottom_right = (top_left[0]+change[0], top_left[1]+change[i])
-            row1[i].append(bottom_right)
-            number_image = self.image[top_left[0]:bottom_right[0]+1, top_left[1]:bottom_right[1]+1]
-            cv2.imwrite(f"Numbers/{str(curr)}.png", number_image)
-            curr += 1
-        coords.append(row1)
-        for i in range(1, 9):
             curr_row = []
             for j in range(9):
-                top_left = (row1[i][0][1], row1[j][0][1])
+                top_left = (start[i], start[j])
                 bottom_right = (top_left[0]+change[i], top_left[1]+change[j])
                 curr_row.append([top_left, bottom_right])
                 number_image = self.image[top_left[0]:bottom_right[0]+1, top_left[1]:bottom_right[1]+1]
-                cv2.imwrite(f"Numbers/{str(curr)}.png", number_image)
-                curr += 1
+                cv2.imwrite(f"Numbers/{str(i*9+j+1)}.png", number_image)
             coords.append(curr_row)
         print(coords)
         
