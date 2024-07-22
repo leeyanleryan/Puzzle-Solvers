@@ -1,7 +1,7 @@
 from sudokuReader import sudokuReader
 from sudokuSolver import sudokuSolver
 
-if __name__ == "__main__":
+def main():
     # Using screenshots
     sr = sudokuReader("Puzzles/ss puzzle3.png")
     ss = sudokuSolver(sr.sudoku)
@@ -66,3 +66,6 @@ if __name__ == "__main__":
     # my_ans2 = ss.solve()
     # ss.printSolution()
     # print(f"Solution is same as answer: {my_ans2 == answer2}")
+
+if __name__ == "__main__":
+    main()
