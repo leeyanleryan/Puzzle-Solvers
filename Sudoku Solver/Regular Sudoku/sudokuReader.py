@@ -125,7 +125,12 @@ class sudokuReader:
     def saveNumbers(self):
         start = [2, 58, 113, 168, 223, 278, 334, 388, 443]
         change = [54, 53, 52, 53, 53, 53, 52, 53, 54]
-        curr = 77
+        with open("Numbers/data.txt", "r") as f:
+            last = ""
+            for line in f:
+                last = line
+        curr = int(last.split(",")[0])+1
+        begin = curr
         for i in range(9):
             for j in range(9):
                 number_image = self.resizeNumberImage(start, change, i, j)
@@ -133,6 +138,11 @@ class sudokuReader:
                 if not is_empty:
                     self.saveImage(f"Numbers/{str(curr)}.png", number_image)
                     curr += 1
+        with open("Numbers/data.txt", "a") as f:
+            f.write("\n")
+            for index in range(begin, curr-1):
+                f.write(f"{str(index)},\n")
+            f.write(f"{curr-1},")
     
     def readGrid(self):
         start = [2, 58, 113, 168, 223, 278, 334, 388, 443]
@@ -151,6 +161,8 @@ class sudokuReader:
 
     def convertNumberToBinary(self, number_image):
         output = []
+        multiplier = 1
+        sumproduct = 0
         for i in range(number_image.shape[0]):
             row = []
             for j in range(number_image.shape[1]):
@@ -158,14 +170,17 @@ class sudokuReader:
                     row.append("0")
                 else:
                     row.append("1")
+                    sumproduct += 1*multiplier**2
+                    multiplier += 1
             output.append(row)
-        return output
+        return output, sumproduct
     
     def readNumber(self, number_image):
-        number_image_binary = self.convertNumberToBinary(number_image)
+        number_image_binary, sumproduct = self.convertNumberToBinary(number_image)
         for row in number_image_binary:
             print("".join(row))
+        print(sumproduct)
         print()
         return 0
         
-sr = sudokuReader("Puzzles/puzzle7.png")
+sr = sudokuReader("Puzzles/puzzle4.png")
