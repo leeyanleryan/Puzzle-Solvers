@@ -1,20 +1,23 @@
 import cv2
-import numpy as np
+import os.path
 
 class sudokuReader:
     def __init__(self, image):
         self.name = image
         self.modified_name = self.getCroppedName()
-        self.image = cv2.imread(image)
+        self.getImage()
         self.modified_image = self.image
-        self.hsv_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
-        self.height, self.width, self.channels = self.getSize(self.image)
+        self.height, self.width, self.channels = self.image.shape
         self.sudoku = []
         self.border_rgb = [97, 72, 52]
         self.divider_rgb = [228, 217, 209]
         self.cropImage()
-        #self.saveNumbers()
-        self.readGrid()
+
+    def getImage(self):
+        if os.path.isfile(self.modified_name):
+            self.image = cv2.imread(self.modified_name)
+        else:
+            self.image = cv2.imread(self.name)
 
     def getCroppedName(self):
         lst = self.name.split("/")
@@ -31,15 +34,8 @@ class sudokuReader:
     def getRGBAt(self, image, row, col):
         return [value for value in image[row, col]]
 
-    def getHSVAt(self, row, col):
-        self.hsv_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
-        return [value for value in self.hsv_image[row, col]]
-
     def changeRGBAt(self, image, row, col, rgb):
         image[row, col] = rgb
-
-    def getSize(self, image):
-        return image.shape
     
     def saveImage(self, name, image):
         cv2.imwrite(name, image)
@@ -51,7 +47,7 @@ class sudokuReader:
             return
         self.image = self.image[top_left[0]:bottom_right[0]+1, top_left[1]:bottom_right[1]+1]
         self.modified_image = self.image
-        self.height, self.width, self.channels = self.getSize(self.image)
+        self.height, self.width, self.channels = self.image.shape
         self.saveImage(self.modified_name, self.image)
     
     def getBorderCoordinates(self):
@@ -122,31 +118,50 @@ class sudokuReader:
 
         return self.image[top_left[0]:bottom_right[0]+1, top_left[1]:bottom_right[1]+1]
 
-    def saveNumbers(self):
+    def saveNumbers(self, folder):
         start = [2, 58, 113, 168, 223, 278, 334, 388, 443]
         change = [54, 53, 52, 53, 53, 53, 52, 53, 54]
-        with open("Numbers/data.txt", "r") as f:
+        data_empty = False
+        with open(f"{folder}/data.txt", "r") as f:
             last = ""
             for line in f:
                 last = line
-        curr = int(last.split(",")[0])+1
-        begin = curr
+        if last == "":
+            data_empty = True
+            curr = 1
+        else:
+            curr = int(last.split(",")[0])+1
+        data = []
         for i in range(9):
             for j in range(9):
                 number_image = self.resizeNumberImage(start, change, i, j)
                 number_image, is_empty = self.removeExtraColor(number_image)
                 if not is_empty:
-                    self.saveImage(f"Numbers/{str(curr)}.png", number_image)
+                    self.saveImage(f"{folder}/{str(curr)}.png", number_image)
+                    binary_image = self.convertNumberImageToBinary(number_image)
+                    sp_forward, sp_backward = self.getSumProduct(binary_image)
+                    data.append((str(curr), str(sp_forward), str(sp_backward)))
                     curr += 1
-        with open("Numbers/data.txt", "a") as f:
-            f.write("\n")
-            for index in range(begin, curr-1):
-                f.write(f"{str(index)},\n")
-            f.write(f"{curr-1},")
+        with open(f"{folder}/data.txt", "a") as f:
+            if not data_empty:
+                f.write("\n")
+            for i in range(len(data)-1):
+                f.write(f"{data[i][0]},{data[i][1]},{data[i][2]},\n")
+            f.write(f"{data[len(data)-1][0]},{data[len(data)-1][1]},{data[len(data)-1][2]},")
     
-    def readGrid(self):
+    def getNumbersData(self, folder):
+        output = []
+        with open(f"{folder}/data.txt", "r") as f:
+            for line in f:
+                line = line.rstrip().split(",")
+                line = [int(x) for x in line]
+                output.append(line)
+        return output
+
+    def readGrid(self, folder):
         start = [2, 58, 113, 168, 223, 278, 334, 388, 443]
         change = [54, 53, 52, 53, 53, 53, 52, 53, 54]
+        numbers_data = self.getNumbersData(folder)
         for i in range(9):
             row = []
             for j in range(9):
@@ -155,32 +170,63 @@ class sudokuReader:
                 if is_empty:
                     number = 0
                 else:
-                    number = self.readNumber(number_image)
+                    number = self.readNumber(number_image, numbers_data)
                 row.append(number)
             self.sudoku.append(row)
 
-    def convertNumberToBinary(self, number_image):
+    def convertNumberImageToBinary(self, number_image):
         output = []
-        multiplier = 1
-        sumproduct = 0
         for i in range(number_image.shape[0]):
             row = []
             for j in range(number_image.shape[1]):
                 if self.getRGBAt(number_image, i, j) == [255, 255, 255]:
-                    row.append("0")
+                    row.append(0)
                 else:
-                    row.append("1")
-                    sumproduct += 1*multiplier**2
-                    multiplier += 1
+                    row.append(1)
             output.append(row)
-        return output, sumproduct
+        return output
     
-    def readNumber(self, number_image):
-        number_image_binary, sumproduct = self.convertNumberToBinary(number_image)
-        for row in number_image_binary:
-            print("".join(row))
-        print(sumproduct)
+    def getSumProduct(self, binary_image):
+        forward = 0
+        multiplier = 1
+        for i in range(len(binary_image)):
+            has_ones = False
+            for j in range(len(binary_image[0])):
+                if binary_image[i][j] == 1:
+                    has_ones = True
+                    forward += multiplier**3
+            if has_ones:
+                multiplier += 1
+        backward = 0
+        multiplier = 1
+        for i in range(len(binary_image)-1, -1, -1):
+            has_ones = False
+            for j in range(len(binary_image[0])-1, -1, -1):
+                if binary_image[i][j] == 1:
+                    has_ones = True
+                    backward += multiplier**3
+            if has_ones:
+                multiplier += 1
+        return forward, backward
+    
+    def printNumber(self, binary_image):
+        for row in binary_image:
+            pass
+            print("".join([str(x) for x in row]))
+    
+    def readNumber(self, number_image, numbers_data):
+        binary_image = self.convertNumberImageToBinary(number_image)
+        sp_forward, sp_backward = self.getSumProduct(binary_image)
+        nd_copy = [row.copy() for row in numbers_data]
+        print(sp_forward, sp_backward)
+        for row in nd_copy:
+            row[1] = abs(row[1]-sp_forward)
+            row[2] = abs(row[2]-sp_backward)
+        nd_copy.sort(key = lambda x: x[1])
+        print(nd_copy)
+        #self.printNumber(binary_image)
         print()
         return 0
         
-sr = sudokuReader("Puzzles/puzzle4.png")
+sr = sudokuReader("Puzzles/puzzle3.png")
+sr.readGrid("Numbers2")

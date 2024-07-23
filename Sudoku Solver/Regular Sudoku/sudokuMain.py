@@ -3,7 +3,8 @@ from sudokuSolver import sudokuSolver
 
 def main():
     # Using screenshots
-    sr = sudokuReader("Puzzles/ss puzzle3.png")
+    sr = sudokuReader("Puzzles/puzzle3.png")
+    sr.readGrid("Numbers2")
     ss = sudokuSolver(sr.sudoku)
     ss.solve()
     ss.printSolution()
@@ -66,6 +67,20 @@ def main():
     # my_ans2 = ss.solve()
     # ss.printSolution()
     # print(f"Solution is same as answer: {my_ans2 == answer2}")
+
+    # puzzle3 = [[5,0,0,6,0,0,0,0,0],
+    #            [8,2,7,5,0,0,0,0,0],
+    #            [6,0,0,8,3,1,0,0,5],
+    #            [0,0,2,4,0,0,0,8,7],
+    #            [0,0,0,0,0,0,4,0,2],
+    #            [0,0,4,0,0,8,0,0,6],
+    #            [0,9,0,1,0,7,0,0,0],
+    #            [2,1,0,0,0,6,7,0,0],
+    #            [0,5,3,0,0,0,0,0,9]]
+    
+    # ss = sudokuSolver(puzzle3)
+    # ss.solve()
+    # ss.printSolution()
 
 if __name__ == "__main__":
     main()

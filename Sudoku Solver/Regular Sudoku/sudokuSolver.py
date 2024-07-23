@@ -19,7 +19,14 @@ class sudokuSolver:
 
     def printSolution(self):
         for i in range(9):
-            print(self.sudoku[i])
+            row = ""
+            for j in range(9):
+                row += str(self.sudoku[i][j])
+                if (j+1)%3 == 0:
+                    row += "  "
+            print(row)
+            if (i+1)%3 == 0:
+                print()
 
     def solve(self):
         changed = []
