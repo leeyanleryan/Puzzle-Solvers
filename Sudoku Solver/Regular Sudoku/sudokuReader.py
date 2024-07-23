@@ -139,8 +139,8 @@ class sudokuReader:
                 if not is_empty:
                     self.saveImage(f"{folder}/{str(curr)}.png", number_image)
                     binary_image = self.convertNumberImageToBinary(number_image)
-                    sp_forward, sp_backward = self.getSumProduct(binary_image)
-                    data.append((str(curr), str(sp_forward), str(sp_backward)))
+                    sp_forward, sp_sideward = self.getSumProduct(binary_image)
+                    data.append((str(curr), str(sp_forward), str(sp_sideward)))
                     curr += 1
         with open(f"{folder}/data.txt", "a") as f:
             if not data_empty:
@@ -197,36 +197,87 @@ class sudokuReader:
                     forward += multiplier**3
             if has_ones:
                 multiplier += 1
-        backward = 0
+        sideward = 0
         multiplier = 1
-        for i in range(len(binary_image)-1, -1, -1):
+        for i in range(len(binary_image[0])-1, -1, -1):
             has_ones = False
-            for j in range(len(binary_image[0])-1, -1, -1):
-                if binary_image[i][j] == 1:
+            for j in range(len(binary_image)-1, -1, -1):
+                if binary_image[j][i] == 1:
                     has_ones = True
-                    backward += multiplier**3
+                    sideward += multiplier**3
             if has_ones:
                 multiplier += 1
-        return forward, backward
+        return forward, sideward
     
     def printNumber(self, binary_image):
         for row in binary_image:
-            pass
             print("".join([str(x) for x in row]))
     
     def readNumber(self, number_image, numbers_data):
         binary_image = self.convertNumberImageToBinary(number_image)
         sp_forward, sp_backward = self.getSumProduct(binary_image)
         nd_copy = [row.copy() for row in numbers_data]
-        print(sp_forward, sp_backward)
         for row in nd_copy:
             row[1] = abs(row[1]-sp_forward)
             row[2] = abs(row[2]-sp_backward)
-        nd_copy.sort(key = lambda x: x[1])
+            if (row[1], row[2]) == (0, 0):
+                return row[3]
+        nd_copy = sorted(sorted(nd_copy, key = lambda x: x[2])[:11], key = lambda x: x[1])[:5]
+        print(sp_forward, sp_backward)
         print(nd_copy)
-        #self.printNumber(binary_image)
+        self.printNumber(binary_image)
         print()
         return 0
         
-sr = sudokuReader("Puzzles/puzzle9.png")
+sr = sudokuReader("Puzzles/puzzle10.png")
 sr.saveNumbers("Numbers")
+
+# for i in range(9):
+#     row = ""
+#     for j in range(9):
+#         row += str(sr.sudoku[i][j])
+#         if (j+1)%3 == 0:
+#             row += "  "
+#     print(row)
+#     if (i+1)%3 == 0:
+#         print()
+
+# def getRGBAt(image, row, col):
+#     return [value for value in image[row, col]]
+
+# def convertNumberImageToBinary(number_image):
+#     output = []
+#     for i in range(number_image.shape[0]):
+#         row = []
+#         for j in range(number_image.shape[1]):
+#             if getRGBAt(number_image, i, j) == [255, 255, 255]:
+#                 row.append(0)
+#             else:
+#                 row.append(1)
+#         output.append(row)
+#     return output
+
+# def getSumProduct(binary_image):
+#     sideward = 0
+#     multiplier = 1
+#     for i in range(len(binary_image[0])-1, -1, -1):
+#         has_ones = False
+#         for j in range(len(binary_image)-1, -1, -1):
+#             if binary_image[j][i] == 1:
+#                 has_ones = True
+#                 sideward += multiplier**3
+#         if has_ones:
+#             multiplier += 1
+#     return sideward
+
+# output = []
+# with open("Numbers/data.txt", "r") as f:
+#     for line in f:
+#         line = line.split(",")
+#         number_image = convertNumberImageToBinary(cv2.imread(f"Numbers/{line[0]}.png"))
+#         line[2] = str(getSumProduct(number_image))
+#         output.append(line)
+
+# with open("Numbers/data.txt", "w") as f:
+#     for row in output:
+#         f.write(",".join(row))
