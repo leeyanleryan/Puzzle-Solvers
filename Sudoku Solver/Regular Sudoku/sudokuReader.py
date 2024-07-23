@@ -229,8 +229,8 @@ class sudokuReader:
         print()
         return 0
         
-sr = sudokuReader("Puzzles/puzzle10.png")
-sr.saveNumbers("Numbers")
+sr = sudokuReader("Puzzles/puzzle11.png")
+# sr.saveNumbers("Numbers")
 
 # for i in range(9):
 #     row = ""
