@@ -228,5 +228,5 @@ class sudokuReader:
         print()
         return 0
         
-sr = sudokuReader("Puzzles/puzzle3.png")
-sr.readGrid("Numbers2")
+sr = sudokuReader("Puzzles/puzzle9.png")
+sr.saveNumbers("Numbers")
