@@ -3,7 +3,7 @@ import sys
 
 class sudokuReader:
     def __init__(self, image):
-        sys.setrecursionlimit(10000)
+        #sys.setrecursionlimit(10000)
         self.name = image
         self.image = cv2.imread(self.name)
         self.height, self.width, self.channels = self.image.shape
@@ -143,8 +143,10 @@ class sudokuReader:
         with open(f"{folder}/data.txt", "r") as f:
             for line in f:
                 line = line.rstrip().split(",")
-                line = [int(x) for x in line]
-                output.append(line)
+                new_line = [int(line[0]), int(line[1])]
+                for i in range(2, len(line), 2):
+                    new_line.append((int(line[i][1:]), int(line[i+1][:-1])))
+                output.append(new_line)
         return output
 
     def readGrid(self, folder):
@@ -164,7 +166,7 @@ class sudokuReader:
             self.sudoku.append(row)
 
     def convertNumberImageToBinary(self, number_image):
-        output = []
+        output, coords = [], []
         for i in range(number_image.shape[0]):
             row = []
             for j in range(number_image.shape[1]):
@@ -172,26 +174,36 @@ class sudokuReader:
                     row.append(0)
                 else:
                     row.append(1)
+                    coords.append((i, j))
             output.append(row)
-        return output
+        return output, coords
     
     def printNumber(self, binary_image):
         for row in binary_image:
             print("".join([str(x) for x in row]))
     
     def readNumber(self, number_image, numbers_data):
-        binary_image = self.convertNumberImageToBinary(number_image)
-        sp_forward, sp_backward = self.getSumProduct(binary_image)
-        nd_copy = [row.copy() for row in numbers_data]
-        for row in nd_copy:
-            row[1] = abs(row[1]-sp_forward)
-            row[2] = abs(row[2]-sp_backward)
-            if (row[1], row[2]) == (0, 0):
-                return row[3]
-        nd_copy = sorted(sorted(nd_copy, key = lambda x: x[2])[:16], key = lambda x: x[1])[:5]
-        print(sp_forward, sp_backward)
-        print(nd_copy)
+        binary_image, binary_coords = self.convertNumberImageToBinary(number_image)
+        number_distances = []
+        for number in numbers_data:
+            number_coords = number[2:]
+            actual_min_distance = 5003
+            for binary_coord in binary_coords:
+                x1 = binary_coord[0]
+                y1 = binary_coord[1]
+                min_distance = 5001
+                for number_coord in number_coords:
+                    x2 = number_coord[0]
+                    y2 = number_coord[1]
+                    if (x2-x1)**2 + (y2-y1)**2 < min_distance:
+                        min_distance = (x2-x1)**2 + (y2-y1)**2
+                if min_distance < actual_min_distance:
+                    print(min_distance)
+                    actual_min_distance = min_distance
+            number_distances.append([number[1], actual_min_distance])
+        number_distances = sorted(number_distances, key = lambda x: x[-1])[:3]
         self.printNumber(binary_image)
+        print(number_distances)
         print()
         return 0
     
