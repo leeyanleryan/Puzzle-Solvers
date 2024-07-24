@@ -3,7 +3,7 @@ import sys
 
 class sudokuReader:
     def __init__(self, image):
-        #sys.setrecursionlimit(10000)
+        sys.setrecursionlimit(10000)
         self.name = image
         self.image = cv2.imread(self.name)
         self.height, self.width, self.channels = self.image.shape
@@ -161,7 +161,7 @@ class sudokuReader:
                 if is_empty:
                     number = 0
                 else:
-                    number = self.readNumber(number_image, numbers_data)
+                    number = self.readNumber(folder, number_image, numbers_data)
                 row.append(number)
             self.sudoku.append(row)
 
@@ -182,12 +182,12 @@ class sudokuReader:
         for row in binary_image:
             print("".join([str(x) for x in row]))
     
-    def readNumber(self, number_image, numbers_data):
+    def readNumber(self, folder, number_image, numbers_data):
         binary_image, binary_coords = self.convertNumberImageToBinary(number_image)
         number_distances = []
         for number in numbers_data:
             number_coords = number[2:]
-            actual_min_distance = 5003
+            total_distance = 0
             for binary_coord in binary_coords:
                 x1 = binary_coord[0]
                 y1 = binary_coord[1]
@@ -197,15 +197,21 @@ class sudokuReader:
                     y2 = number_coord[1]
                     if (x2-x1)**2 + (y2-y1)**2 < min_distance:
                         min_distance = (x2-x1)**2 + (y2-y1)**2
-                if min_distance < actual_min_distance:
-                    print(min_distance)
-                    actual_min_distance = min_distance
-            number_distances.append([number[1], actual_min_distance])
-        number_distances = sorted(number_distances, key = lambda x: x[-1])[:3]
-        self.printNumber(binary_image)
-        print(number_distances)
-        print()
-        return 0
+                total_distance += min_distance
+            number_distances.append([number[1], total_distance])
+        number_distances = sorted(number_distances, key = lambda x: x[-1])[:5]
+        #self.printNumber(binary_image)
+        #print(number_distances)
+        #print()
+        number_count = [0 for i in range(10)]
+        for num, distance in number_distances:
+            number_count[num] += 1
+            if num == 3 or num == 8:
+                if self.hasClosedLoop(binary_image):
+                    return 8
+                else:
+                    return 3
+        return number_count.index(max(number_count))
     
     def hasClosedLoop(self, binary_image):
         total = 0
@@ -245,19 +251,19 @@ class sudokuReader:
                 visited.append((row, col+1))
                 self.floodFill(binary_image, row, col+1, visited)
 
-sr = sudokuReader("Puzzles/puzzle17.png")
+sr = sudokuReader("Puzzles/puzzle3.png")
 #sr.saveNumbers("Numbers")
 sr.readGrid("Numbers")
 
-# for i in range(9):
-#     row = ""
-#     for j in range(9):
-#         row += str(sr.sudoku[i][j])
-#         if (j+1)%3 == 0:
-#             row += "  "
-#     print(row)
-#     if (i+1)%3 == 0:
-#         print()
+for i in range(9):
+    row = ""
+    for j in range(9):
+        row += str(sr.sudoku[i][j])
+        if (j+1)%3 == 0:
+            row += "  "
+    print(row)
+    if (i+1)%3 == 0:
+        print()
 
 # def getRGBAt(image, row, col):
 #     return [value for value in image[row, col]]
