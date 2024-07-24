@@ -233,9 +233,9 @@ class sudokuReader:
                 visited.append((row, col+1))
                 self.floodFill(binary_image, row, col+1, visited)
 
-sr = sudokuReader("Puzzles/puzzle16.png")
-sr.saveNumbers("Numbers")
-#sr.readGrid("Numbers")
+sr = sudokuReader("Puzzles/puzzle17.png")
+#sr.saveNumbers("Numbers")
+sr.readGrid("Numbers")
 
 # for i in range(9):
 #     row = ""
