@@ -4,7 +4,7 @@ import sys
 
 class sudokuReader:
     def __init__(self, image):
-        sys.
+        sys.setrecursionlimit(10000)
         self.name = image
         self.modified_name = self.getCroppedName()
         self.getImage()
@@ -228,7 +228,6 @@ class sudokuReader:
         print(sp_forward, sp_backward)
         print(nd_copy)
         self.printNumber(binary_image)
-        print(self.hasClosedLoop(binary_image))
         print()
         return 0
     
