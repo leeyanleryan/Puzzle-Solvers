@@ -2,7 +2,7 @@ from sudokuReader import sudokuReader
 from sudokuSolver import sudokuSolver
 
 def main():
-    sr = sudokuReader("Puzzles/puzzle5.png")
+    sr = sudokuReader("Puzzles/puzzle6.png")
     sr.readGrid("Numbers")
     ss = sudokuSolver(sr.sudoku)
     ss.solve()
