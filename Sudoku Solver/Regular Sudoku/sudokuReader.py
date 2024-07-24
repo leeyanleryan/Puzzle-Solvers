@@ -1,8 +1,10 @@
 import cv2
 import os.path
+import sys
 
 class sudokuReader:
     def __init__(self, image):
+        sys.
         self.name = image
         self.modified_name = self.getCroppedName()
         self.getImage()
@@ -222,25 +224,66 @@ class sudokuReader:
             row[2] = abs(row[2]-sp_backward)
             if (row[1], row[2]) == (0, 0):
                 return row[3]
-        nd_copy = sorted(sorted(nd_copy, key = lambda x: x[2])[:11], key = lambda x: x[1])[:5]
+        nd_copy = sorted(sorted(nd_copy, key = lambda x: x[2])[:16], key = lambda x: x[1])[:5]
         print(sp_forward, sp_backward)
         print(nd_copy)
         self.printNumber(binary_image)
+        print(self.hasClosedLoop(binary_image))
         print()
         return 0
-        
-sr = sudokuReader("Puzzles/puzzle11.png")
-# sr.saveNumbers("Numbers")
+    
+    def hasClosedLoop(self, binary_image):
+        total = 0
+        for i in range(len(binary_image)):
+            for j in range(len(binary_image[0])):
+                if binary_image[i][j] == 0:
+                    total += 1
+        bi_copy = [row.copy() for row in binary_image]
+        bi_copy[0][0] = 1
+        visited = [(0,0)]
+        self.floodFill(bi_copy, 0, 0, visited)
+        return len(visited) != total
 
-# for i in range(9):
-#     row = ""
-#     for j in range(9):
-#         row += str(sr.sudoku[i][j])
-#         if (j+1)%3 == 0:
-#             row += "  "
-#     print(row)
-#     if (i+1)%3 == 0:
-#         print()
+    def floodFill(self, binary_image, row, col, visited):
+        # up
+        if row-1 > -1:
+            if binary_image[row-1][col] == 0:
+                binary_image[row-1][col] = 1
+                visited.append((row-1, col))
+                self.floodFill(binary_image, row-1, col, visited)
+        # down
+        if row+1 < len(binary_image):
+            if binary_image[row+1][col] == 0:
+                binary_image[row+1][col] = 1
+                visited.append((row+1, col))
+                self.floodFill(binary_image, row+1, col, visited)
+        # left
+        if col-1 > -1:
+            if binary_image[row][col-1] == 0:
+                binary_image[row][col-1] = 1
+                visited.append((row, col-1))
+                self.floodFill(binary_image, row, col-1, visited)
+        # right
+        if col+1 < len(binary_image[0]):
+            if binary_image[row][col+1] == 0:
+                binary_image[row][col+1] = 1
+                visited.append((row, col+1))
+                self.floodFill(binary_image, row, col+1, visited)
+
+        
+sr = sudokuReader("Puzzles/puzzle15.png")
+#sr.saveNumbers("Numbers")
+sr.readGrid("Numbers")
+
+for i in range(9):
+    row = ""
+    for j in range(9):
+        row += str(sr.sudoku[i][j])
+        if (j+1)%3 == 0:
+            row += "  "
+    print(row)
+    if (i+1)%3 == 0:
+        print()
 
 # def getRGBAt(image, row, col):
 #     return [value for value in image[row, col]]
