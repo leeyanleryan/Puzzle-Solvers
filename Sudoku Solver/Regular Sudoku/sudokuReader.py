@@ -1,32 +1,15 @@
 import cv2
-import os.path
 import sys
 
 class sudokuReader:
     def __init__(self, image):
         sys.setrecursionlimit(10000)
         self.name = image
-        self.modified_name = self.getCroppedName()
-        self.getImage()
-        self.modified_image = self.image
+        self.image = cv2.imread(self.name)
         self.height, self.width, self.channels = self.image.shape
         self.sudoku = []
         self.border_rgb = [97, 72, 52]
-        self.divider_rgb = [228, 217, 209]
         self.cropImage()
-
-    def getImage(self):
-        if os.path.isfile(self.modified_name):
-            self.image = cv2.imread(self.modified_name)
-        else:
-            self.image = cv2.imread(self.name)
-
-    def getCroppedName(self):
-        lst = self.name.split("/")
-        temp = lst[-1].split(".")
-        temp[0] = temp[0] + "_cropped"
-        lst[-1] = ".".join(temp)
-        return "/".join(lst)
 
     def displayImage(self):
         cv2.imshow('Sudoku', self.image)
@@ -48,9 +31,8 @@ class sudokuReader:
             print("Invalid Image")
             return
         self.image = self.image[top_left[0]:bottom_right[0]+1, top_left[1]:bottom_right[1]+1]
-        self.modified_image = self.image
         self.height, self.width, self.channels = self.image.shape
-        self.saveImage(self.modified_name, self.image)
+        self.saveImage(self.name, self.image)
     
     def getBorderCoordinates(self):
         top_left = (-1, -1)
@@ -120,36 +102,41 @@ class sudokuReader:
 
         return self.image[top_left[0]:bottom_right[0]+1, top_left[1]:bottom_right[1]+1]
 
+    def setDataRow(self, index, number_image):
+        row = []
+        row.append(f"{str(index)},")
+        for i in range(number_image.shape[0]):
+            for j in range(number_image.shape[1]):
+                if self.getRGBAt(number_image, i, j) != [255, 255, 255]:
+                    row.append(f"({str(i)},{str(j)})")
+        row = ",".join(row)
+        return row
+
     def saveNumbers(self, folder):
         start = [2, 58, 113, 168, 223, 278, 334, 388, 443]
         change = [54, 53, 52, 53, 53, 53, 52, 53, 54]
         data_empty = False
-        with open(f"{folder}/data.txt", "r") as f:
-            last = ""
-            for line in f:
-                last = line
-        if last == "":
-            data_empty = True
-            curr = 1
-        else:
-            curr = int(last.split(",")[0])+1
+        with open(f"{folder}/latest.txt", "r") as f:
+            index = int(f.readline())
+            if index == 1:
+                data_empty = True
         data = []
         for i in range(9):
             for j in range(9):
                 number_image = self.resizeNumberImage(start, change, i, j)
                 number_image, is_empty = self.removeExtraColor(number_image)
                 if not is_empty:
-                    self.saveImage(f"{folder}/{str(curr)}.png", number_image)
-                    binary_image = self.convertNumberImageToBinary(number_image)
-                    sp_forward, sp_sideward = self.getSumProduct(binary_image)
-                    data.append((str(curr), str(sp_forward), str(sp_sideward)))
-                    curr += 1
+                    self.saveImage(f"{folder}/{str(index)}.png", number_image)
+                    data.append(self.setDataRow(index, number_image))
+                    index += 1
+        with open(f"{folder}/latest.txt", "w") as f:
+            f.write(str(index))
         with open(f"{folder}/data.txt", "a") as f:
             if not data_empty:
                 f.write("\n")
             for i in range(len(data)-1):
-                f.write(f"{data[i][0]},{data[i][1]},{data[i][2]},\n")
-            f.write(f"{data[len(data)-1][0]},{data[len(data)-1][1]},{data[len(data)-1][2]},")
+                f.write(f"{data[i]}\n")
+            f.write(f"{data[-1]}")
     
     def getNumbersData(self, folder):
         output = []
@@ -187,29 +174,6 @@ class sudokuReader:
                     row.append(1)
             output.append(row)
         return output
-    
-    def getSumProduct(self, binary_image):
-        forward = 0
-        multiplier = 1
-        for i in range(len(binary_image)):
-            has_ones = False
-            for j in range(len(binary_image[0])):
-                if binary_image[i][j] == 1:
-                    has_ones = True
-                    forward += multiplier**3
-            if has_ones:
-                multiplier += 1
-        sideward = 0
-        multiplier = 1
-        for i in range(len(binary_image[0])-1, -1, -1):
-            has_ones = False
-            for j in range(len(binary_image)-1, -1, -1):
-                if binary_image[j][i] == 1:
-                    has_ones = True
-                    sideward += multiplier**3
-            if has_ones:
-                multiplier += 1
-        return forward, sideward
     
     def printNumber(self, binary_image):
         for row in binary_image:
@@ -269,57 +233,39 @@ class sudokuReader:
                 visited.append((row, col+1))
                 self.floodFill(binary_image, row, col+1, visited)
 
-        
-sr = sudokuReader("Puzzles/puzzle15.png")
-#sr.saveNumbers("Numbers")
-sr.readGrid("Numbers")
+sr = sudokuReader("Puzzles/puzzle16.png")
+sr.saveNumbers("Numbers")
+#sr.readGrid("Numbers")
 
-for i in range(9):
-    row = ""
-    for j in range(9):
-        row += str(sr.sudoku[i][j])
-        if (j+1)%3 == 0:
-            row += "  "
-    print(row)
-    if (i+1)%3 == 0:
-        print()
+# for i in range(9):
+#     row = ""
+#     for j in range(9):
+#         row += str(sr.sudoku[i][j])
+#         if (j+1)%3 == 0:
+#             row += "  "
+#     print(row)
+#     if (i+1)%3 == 0:
+#         print()
 
 # def getRGBAt(image, row, col):
 #     return [value for value in image[row, col]]
-
-# def convertNumberImageToBinary(number_image):
-#     output = []
-#     for i in range(number_image.shape[0]):
-#         row = []
-#         for j in range(number_image.shape[1]):
-#             if getRGBAt(number_image, i, j) == [255, 255, 255]:
-#                 row.append(0)
-#             else:
-#                 row.append(1)
-#         output.append(row)
-#     return output
-
-# def getSumProduct(binary_image):
-#     sideward = 0
-#     multiplier = 1
-#     for i in range(len(binary_image[0])-1, -1, -1):
-#         has_ones = False
-#         for j in range(len(binary_image)-1, -1, -1):
-#             if binary_image[j][i] == 1:
-#                 has_ones = True
-#                 sideward += multiplier**3
-#         if has_ones:
-#             multiplier += 1
-#     return sideward
 
 # output = []
 # with open("Numbers/data.txt", "r") as f:
 #     for line in f:
 #         line = line.split(",")
-#         number_image = convertNumberImageToBinary(cv2.imread(f"Numbers/{line[0]}.png"))
-#         line[2] = str(getSumProduct(number_image))
-#         output.append(line)
+#         row = []
+#         row.append(line[0])
+#         row.append(line[-1].rstrip())
+#         number_image = cv2.imread(f"Numbers/{line[0]}.png")
+#         for i in range(number_image.shape[0]):
+#             for j in range(number_image.shape[1]):
+#                 if getRGBAt(number_image, i, j) != [255, 255, 255]:
+#                     row.append(f"({str(i)},{str(j)})")
+#         row[-1] = row[-1] + "\n"
+#         row = ",".join(row)
+#         output.append(row)
 
 # with open("Numbers/data.txt", "w") as f:
 #     for row in output:
-#         f.write(",".join(row))
+#         f.write(row)
