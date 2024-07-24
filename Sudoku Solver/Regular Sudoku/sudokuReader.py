@@ -161,7 +161,7 @@ class sudokuReader:
                 if is_empty:
                     number = 0
                 else:
-                    number = self.readNumber(folder, number_image, numbers_data)
+                    number = self.readNumber(number_image, numbers_data)
                 row.append(number)
             self.sudoku.append(row)
 
@@ -182,7 +182,7 @@ class sudokuReader:
         for row in binary_image:
             print("".join([str(x) for x in row]))
     
-    def readNumber(self, folder, number_image, numbers_data):
+    def readNumber(self, number_image, numbers_data):
         binary_image, binary_coords = self.convertNumberImageToBinary(number_image)
         number_distances = []
         for number in numbers_data:
@@ -250,40 +250,3 @@ class sudokuReader:
                 binary_image[row][col+1] = 1
                 visited.append((row, col+1))
                 self.floodFill(binary_image, row, col+1, visited)
-
-sr = sudokuReader("Puzzles/puzzle3.png")
-#sr.saveNumbers("Numbers")
-sr.readGrid("Numbers")
-
-for i in range(9):
-    row = ""
-    for j in range(9):
-        row += str(sr.sudoku[i][j])
-        if (j+1)%3 == 0:
-            row += "  "
-    print(row)
-    if (i+1)%3 == 0:
-        print()
-
-# def getRGBAt(image, row, col):
-#     return [value for value in image[row, col]]
-
-# output = []
-# with open("Numbers/data.txt", "r") as f:
-#     for line in f:
-#         line = line.split(",")
-#         row = []
-#         row.append(line[0])
-#         row.append(line[-1].rstrip())
-#         number_image = cv2.imread(f"Numbers/{line[0]}.png")
-#         for i in range(number_image.shape[0]):
-#             for j in range(number_image.shape[1]):
-#                 if getRGBAt(number_image, i, j) != [255, 255, 255]:
-#                     row.append(f"({str(i)},{str(j)})")
-#         row[-1] = row[-1] + "\n"
-#         row = ",".join(row)
-#         output.append(row)
-
-# with open("Numbers/data.txt", "w") as f:
-#     for row in output:
-#         f.write(row)
