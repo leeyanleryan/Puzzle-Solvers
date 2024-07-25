@@ -12,7 +12,13 @@ class sudokuGetter:
     def getSudokuWebsite(self):
         sudoku_website = None
         for window in gw.getAllTitles():
-            if "Sudoku" in window and ("free" in window or "Play" in window):
+            if (("Easy sudoku" in window) or
+                ("Sudoku medium" in window) or
+                ("Hard sudoku" in window) or
+                ("Hardest sudoku" in window) or
+                ("Sudoku Evil" in window) or
+                ("Extreme Sudoku" in window) or
+                ("Play Free Sudoku" in window)):
                 sudoku_website = gw.getWindowsWithTitle(window)[0]
         if sudoku_website == None:
             print("Sudoku website not found. Please ensure it is the only tab open.")

@@ -18,6 +18,7 @@ class sudokuSolver:
         return valid
 
     def printSolution(self):
+        print("The solution is: ")
         for i in range(9):
             row = ""
             for j in range(9):
@@ -41,7 +42,7 @@ class sudokuSolver:
             next_coord = self.findNextEmpty()
             if not next_coord:
                 print("Sudoku has been solved!")
-                print("The solution is: ")
+                print()
                 return self.sudoku
             next_row, next_col, next_depth = next_coord[0], next_coord[1], depth+1
             valid = self.getValidNumbers(next_row, next_col)
@@ -61,6 +62,6 @@ class sudokuSolver:
                         break
                     self.sudoku[remove_row][remove_col] = 0
                     changed.pop()
-        print("Sudoku has been solved!\n")
-        print("The solution is: ")
+        print("Sudoku has been solved!")
+        print()
         return self.sudoku

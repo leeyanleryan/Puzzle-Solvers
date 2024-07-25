@@ -7,7 +7,6 @@ def main():
     sg = sudokuGetter("Puzzles")
     sg.getSudokuScreenshot()
     sr = sudokuReader(sg.puzzle_directory)
-    #sr.saveNumbers("Numbers")
     sr.readGrid("Numbers")
     ss = sudokuSolver(sr.sudoku)
     ss.solve()
