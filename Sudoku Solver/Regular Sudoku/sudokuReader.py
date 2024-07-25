@@ -1,11 +1,12 @@
 import cv2
 import sys
+import os
 
 class sudokuReader:
     def __init__(self, image):
-        print("Reading image...")
         sys.setrecursionlimit(10000)
         self.name = image
+        print("Reading screenshot...")
         self.image = cv2.imread(self.name)
         self.height, self.width, self.channels = self.image.shape
         self.sudoku = []
@@ -34,7 +35,8 @@ class sudokuReader:
         self.image = self.image[top_left[0]:bottom_right[0]+1, top_left[1]:bottom_right[1]+1]
         self.height, self.width, self.channels = self.image.shape
         self.saveImage(self.name, self.image)
-        print("Sudoku has been extracted from the image!")
+        print("Sudoku has been extracted from the screenshot!")
+        print()
     
     def getBorderCoordinates(self):
         top_left = (-1, -1)
@@ -115,13 +117,19 @@ class sudokuReader:
         return row
 
     def saveNumbers(self, folder):
+        print("Saving numbers from the Sudoku...")
         start = [2, 58, 113, 168, 223, 278, 334, 388, 443]
         change = [54, 53, 52, 53, 53, 53, 52, 53, 54]
         data_empty = False
-        with open(f"{folder}/latest.txt", "r") as f:
-            index = int(f.readline())
-            if index == 1:
-                data_empty = True
+        try:
+            number_data = os.listdir(folder)
+        except FileNotFoundError:
+            return "The directory does not exist."
+        except PermissionError:
+            return "You do not have permission to access this directory."
+        index = len(number_data)
+        if index == 1:
+            data_empty = True
         data = []
         for i in range(9):
             for j in range(9):
@@ -131,14 +139,14 @@ class sudokuReader:
                     self.saveImage(f"{folder}/{str(index)}.png", number_image)
                     data.append(self.setDataRow(index, number_image))
                     index += 1
-        with open(f"{folder}/latest.txt", "w") as f:
-            f.write(str(index))
         with open(f"{folder}/data.txt", "a") as f:
             if not data_empty:
                 f.write("\n")
             for i in range(len(data)-1):
                 f.write(f"{data[i]}\n")
             f.write(f"{data[-1]}")
+        print("Numbers from the sudoku has been saved!")
+        print()
     
     def getNumbersData(self, folder):
         output = []
@@ -152,6 +160,7 @@ class sudokuReader:
         return output
 
     def readGrid(self, folder):
+        print("Reading Sudoku...")
         start = [2, 58, 113, 168, 223, 278, 334, 388, 443]
         change = [54, 53, 52, 53, 53, 53, 52, 53, 54]
         numbers_data = self.getNumbersData(folder)
@@ -167,6 +176,7 @@ class sudokuReader:
                 row.append(number)
             self.sudoku.append(row)
         print("Sudoku has been read!")
+        print()
 
     def convertNumberImageToBinary(self, number_image):
         output, coords = [], []

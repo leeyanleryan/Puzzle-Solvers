@@ -29,7 +29,7 @@ class sudokuSolver:
                 print()
 
     def solve(self):
-        print("Now solving the given Sudoku...")
+        print("Solving Sudoku...")
         changed = []
         stack = [(-1, -1, -1, 0)]
         while len(stack) != 0:
@@ -61,6 +61,6 @@ class sudokuSolver:
                         break
                     self.sudoku[remove_row][remove_col] = 0
                     changed.pop()
-        print("Sudoku has been solved!")
+        print("Sudoku has been solved!\n")
         print("The solution is: ")
         return self.sudoku
