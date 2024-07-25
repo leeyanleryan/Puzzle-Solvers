@@ -4,9 +4,7 @@ import os
 
 class sudokuReader:
     def __init__(self, image):
-        sys.setrecursionlimit(10000)
         self.name = image
-        print("Reading screenshot...")
         self.image = cv2.imread(self.name)
         self.height, self.width, self.channels = self.image.shape
         self.sudoku = []
@@ -28,6 +26,7 @@ class sudokuReader:
         cv2.imwrite(name, image)
     
     def cropImage(self):
+        print("Reading screenshot...")
         top_left, bottom_right = self.getBorderCoordinates()
         if top_left == bottom_right == (-1, -1):
             print("Invalid Image")
@@ -161,6 +160,7 @@ class sudokuReader:
 
     def readGrid(self, folder):
         print("Reading Sudoku...")
+        sys.setrecursionlimit(10000)
         start = [2, 58, 113, 168, 223, 278, 334, 388, 443]
         change = [54, 53, 52, 53, 53, 53, 52, 53, 54]
         numbers_data = self.getNumbersData(folder)

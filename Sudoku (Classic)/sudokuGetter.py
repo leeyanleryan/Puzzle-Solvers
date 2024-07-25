@@ -39,15 +39,14 @@ class sudokuGetter:
         if not self.sudoku_website:
             print("Sudoku website not found. Please ensure it is the only tab open.")
             return
-        time.sleep(1)
         self.sudoku_website.restore()
         self.sudoku_website.maximize()
         self.sudoku_website.activate()
-        time.sleep(0.5)
+        time.sleep(0.2)
         screenshot = pyautogui.screenshot()
         self.puzzle_directory = f"{self.directory}/puzzle{str(self.getLatestPuzzleNumber())}.png"
         screenshot.save(self.puzzle_directory)
-        time.sleep(0.5)
+        time.sleep(0.2)
         pyautogui.hotkey("alt", "tab")
         print("Website has been screenshotted!")
         print()

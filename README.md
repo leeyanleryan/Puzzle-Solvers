@@ -1,2 +1,2 @@
 # Solvers
- Coding solvers for various online games
+Coding automated solvers for various online games
