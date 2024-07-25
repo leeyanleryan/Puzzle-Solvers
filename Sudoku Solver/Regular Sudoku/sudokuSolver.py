@@ -25,10 +25,11 @@ class sudokuSolver:
                 if (j+1)%3 == 0:
                     row += "  "
             print(row)
-            if (i+1)%3 == 0:
+            if (i+1)%3 == 0 and i != 8:
                 print()
 
     def solve(self):
+        print("Now solving the given Sudoku...")
         changed = []
         stack = [(-1, -1, -1, 0)]
         while len(stack) != 0:
@@ -39,6 +40,8 @@ class sudokuSolver:
                 changed.append((row, col, num, depth))
             next_coord = self.findNextEmpty()
             if not next_coord:
+                print("Sudoku has been solved!")
+                print("The solution is: ")
                 return self.sudoku
             next_row, next_col, next_depth = next_coord[0], next_coord[1], depth+1
             valid = self.getValidNumbers(next_row, next_col)
@@ -58,4 +61,6 @@ class sudokuSolver:
                         break
                     self.sudoku[remove_row][remove_col] = 0
                     changed.pop()
+        print("Sudoku has been solved!")
+        print("The solution is: ")
         return self.sudoku

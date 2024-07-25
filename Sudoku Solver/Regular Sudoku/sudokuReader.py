@@ -3,6 +3,7 @@ import sys
 
 class sudokuReader:
     def __init__(self, image):
+        print("Reading image...")
         sys.setrecursionlimit(10000)
         self.name = image
         self.image = cv2.imread(self.name)
@@ -33,6 +34,7 @@ class sudokuReader:
         self.image = self.image[top_left[0]:bottom_right[0]+1, top_left[1]:bottom_right[1]+1]
         self.height, self.width, self.channels = self.image.shape
         self.saveImage(self.name, self.image)
+        print("Sudoku has been extracted from the image!")
     
     def getBorderCoordinates(self):
         top_left = (-1, -1)
@@ -164,6 +166,7 @@ class sudokuReader:
                     number = self.readNumber(number_image, numbers_data)
                 row.append(number)
             self.sudoku.append(row)
+        print("Sudoku has been read!")
 
     def convertNumberImageToBinary(self, number_image):
         output, coords = [], []
@@ -199,19 +202,14 @@ class sudokuReader:
                         min_distance = (x2-x1)**2 + (y2-y1)**2
                 total_distance += min_distance
             number_distances.append([number[1], total_distance])
-        number_distances = sorted(number_distances, key = lambda x: x[-1])[:5]
+        number_distances = sorted(number_distances, key = lambda x: x[-1])[:1]
         #self.printNumber(binary_image)
         #print(number_distances)
         #print()
-        number_count = [0 for i in range(10)]
-        for num, distance in number_distances:
-            number_count[num] += 1
-            if num == 3 or num == 8:
-                if self.hasClosedLoop(binary_image):
-                    return 8
-                else:
-                    return 3
-        return number_count.index(max(number_count))
+        number = number_distances[0][0]
+        if number == 3 or number == 8:
+            return 8 if self.hasClosedLoop(binary_image) else 3
+        return number
     
     def hasClosedLoop(self, binary_image):
         total = 0

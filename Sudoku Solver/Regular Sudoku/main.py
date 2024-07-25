@@ -1,8 +1,12 @@
+from sudokuGetter import sudokuGetter
 from sudokuReader import sudokuReader
 from sudokuSolver import sudokuSolver
+from sudokuTyper import sudokuTyper
 
 def main():
-    sr = sudokuReader("Puzzles/puzzle6.png")
+    sg = sudokuGetter("Puzzles")
+    sg.getSudokuScreenshot()
+    sr = sudokuReader(sg.puzzle_directory)
     sr.readGrid("Numbers")
     ss = sudokuSolver(sr.sudoku)
     ss.solve()
