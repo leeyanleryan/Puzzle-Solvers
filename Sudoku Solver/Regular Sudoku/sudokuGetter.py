@@ -9,9 +9,13 @@ class sudokuGetter:
         self.sudoku_website = self.getSudokuWebsite()
 
     def getSudokuWebsite(self):
+        sudoku_website = None
         for window in gw.getAllTitles():
             if "Sudoku" in window and "free" in window:
                 sudoku_website = gw.getWindowsWithTitle(window)[0]
+        if sudoku_website == None:
+            print("Sudoku website not found. Please ensure it is the only tab open.")
+            return
         return sudoku_website
 
     def getLatestPuzzleNumber(self):
