@@ -1,9 +1,11 @@
 import pyautogui
+import time
 
 class sudokuTyper:
-    def __init__(self, sudoku, sudoku_website):
-        self.sudoku = sudoku
+    def __init__(self, sudoku_website, initial_position, sudoku):
         self.sudoku_website = sudoku_website
+        self.initial_position = initial_position
+        self.sudoku = sudoku
 
     def openWebsite(self):
         if not self.sudoku_website:
@@ -15,9 +17,9 @@ class sudokuTyper:
         return True
     
     def resetStartingPosition(self):
-        for _ in range(9):
-            pyautogui.press("up")
-            pyautogui.press("left")
+        pyautogui.moveTo(self.initial_position[1], self.initial_position[0])
+        time.sleep(0.4)
+        pyautogui.click()
 
     def inputSolution(self):
         print("Inputting solution...")

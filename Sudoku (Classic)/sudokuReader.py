@@ -8,6 +8,7 @@ class sudokuReader:
         self.image = cv2.imread(self.name)
         self.height, self.width, self.channels = self.image.shape
         self.sudoku = []
+        self.initial_position = ()
         self.border_rgb = [97, 72, 52]
         self.cropImage()
 
@@ -54,6 +55,7 @@ class sudokuReader:
             top_right_rgb = self.getRGBAt(self.image, top_left[0], top_left[1]+499)
             bottom_right_rgb = self.getRGBAt(self.image, top_left[0]+499, top_left[1]+499)
             if top_left_rgb == bottom_left_rgb == top_right_rgb == bottom_right_rgb:
+                self.initial_position = (top_left[0]+25, top_left[1]+25)
                 return top_left, (top_left[0]+499, top_left[1]+499)
         return (-1, -1), (-1, -1)
     

@@ -14,7 +14,7 @@ def automated():
     sr.readGrid("Numbers")
     ss = sudokuSolver(sr.sudoku)
     ss.solve()
-    st = sudokuTyper(ss.sudoku, sg.sudoku_website)
+    st = sudokuTyper(sg.sudoku_website, sr.initial_position, ss.sudoku)
     st.inputSolution()
 
 def manual():

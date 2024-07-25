@@ -42,11 +42,11 @@ class sudokuGetter:
         self.sudoku_website.restore()
         self.sudoku_website.maximize()
         self.sudoku_website.activate()
-        time.sleep(0.2)
+        time.sleep(0.4)
         screenshot = pyautogui.screenshot()
         self.puzzle_directory = f"{self.directory}/puzzle{str(self.getLatestPuzzleNumber())}.png"
         screenshot.save(self.puzzle_directory)
-        time.sleep(0.2)
+        time.sleep(0.4)
         pyautogui.hotkey("alt", "tab")
         print("Website has been screenshotted!")
         print()
