@@ -1,2 +1,9 @@
 # Puzzle Solvers
-Coding automated solvers for various online puzzle games
+Implemeneted:
+Sudoku (Classic)
+
+To-Do:
+Sudoku (Killer)
+Wordle (NYTimes)
+Minesweeper
+Rubik's Cube
