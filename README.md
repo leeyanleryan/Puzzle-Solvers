@@ -1,9 +1,9 @@
 # Puzzle Solvers
 Implemeneted:
-Sudoku (Classic)
+- Sudoku (Classic)
 
 To-Do:
-Sudoku (Killer)
-Wordle (NYTimes)
-Minesweeper
-Rubik's Cube
+- Sudoku (Killer)
+- Wordle (NYTimes)
+- Minesweeper
+- Rubik's Cube
