@@ -1148,10 +1148,10 @@ document.body.classList.add('cross-dungarees-lite');
                         <a href="/dictionary/affix" target="_blank" class="mw-badge-blue-25 badge text-decoration-none">affix</a>
                     </li>
                                     <li class="pb-4 d-flex">
-                        <a href="/dictionary/AFibs" target="_blank" class="mw-badge-blue-25 badge text-decoration-none">AFibs</a>
+                        <a href="/dictionary/Afibs" target="_blank" class="mw-badge-blue-25 badge text-decoration-none">Afibs</a>
                     </li>
                                     <li class="pb-4 d-flex">
-                        <a href="/dictionary/Afibs" target="_blank" class="mw-badge-blue-25 badge text-decoration-none">Afibs</a>
+                        <a href="/dictionary/AFibs" target="_blank" class="mw-badge-blue-25 badge text-decoration-none">AFibs</a>
                     </li>
                                     <li class="pb-4 d-flex">
                         <a href="/dictionary/afire" target="_blank" class="mw-badge-blue-25 badge text-decoration-none">afire</a>
