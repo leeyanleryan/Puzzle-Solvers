@@ -13,7 +13,10 @@ class sudokuTyper:
             return False
         self.sudoku_website.restore()
         self.sudoku_website.maximize()
-        self.sudoku_website.activate()
+        try:
+            self.sudoku_website.activate()
+        except Exception as e:
+            print(f"Warning: Could not activate window ({e}). Continuing anyway.")
         return True
     
     def resetStartingPosition(self):
